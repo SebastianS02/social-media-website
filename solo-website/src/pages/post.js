@@ -49,7 +49,7 @@ export default function Post() {
     return(
         <div className="my-20 p-12 shadow-lg rounded-lg max-w-md mx-auto">
             <form onSubmit={submitPost}> 
-                <h1 className="text-2x1 font-bold">Create a New Post</h1>
+                <h1 className="text-2xl font-bold">Create a New Post</h1>
                 <div className="py-2">
                     <h3 className="text-lg font-medium py-2">Description</h3>
                     <textarea 

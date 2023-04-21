@@ -1,17 +1,30 @@
-import { auth } from '../../utils/firebase'
+import { auth, db } from '../../utils/firebase'
 import { useAuthState } from "react-firebase-hooks/auth"
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import Message from "../../components/message"
+import { BsTrash2Fill } from "react-icons/bs"
+import { AiFillEdit } from "react-icons/ai"
 
 export default function Dashboard() {
     const route = useRouter();
     const [user, loading] = useAuthState(auth);
+    const [posts, setPosts] = useState([])
 
+    //See if user is logged in, get users posts
     const getData = async () => {
         if(loading) return;
         if(!user) return route.push('/auth/login');
+        const collectionRef = collection(db, 'posts')
+        const q = query(collectionRef, where('user', '==', user.uid))
+        const unsubscribe = onSnapshot(q, (snapshot => {
+            setPosts(snapshot.docs.map((doc) => ({...doc.data(), id: doc.id})))
+        }))
+        return unsubscribe;
     };
 
+    //Get users data
     useEffect(() => {
         getData();
     }, [user, loading]);
@@ -21,8 +34,26 @@ export default function Dashboard() {
     return (
         <div>
             <h1>Your Posts</h1>
-            <div>Posts</div>
-            <button onClick={() => auth.signOut()}>Sign Out</button>
+            <div>
+                {posts.map(post => {
+                    return (
+                        <Message {...post} key={post.id}>
+                            <div className="flex gap-4">
+                                <button className="text-pink-600 flex items-center justify-center gap-2 py-2 text-sm">
+                                    <BsTrash2Fill className="text-2xl" />Delete
+                                </button>
+                                <button className="text-teal-600 flex items-center justify-center gap-2 py-2 text-sm">
+                                    <AiFillEdit className="text-2xl"/>Edit
+                                </button>
+                            </div>
+                        </Message>
+                    )
+                })}
+            </div>
+            <button className="font-medium text-white bg-gray-800 py-2 px-4"
+                onClick={() => auth.signOut()}>
+                Sign Out
+            </button>
         </div>
     );
 }
