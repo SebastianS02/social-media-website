@@ -3,14 +3,14 @@ import { useAuthState } from "react-firebase-hooks/auth"
 import { useRouter, Router } from "next/router"
 import { useEffect, useState } from "react"
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { toast } from "react-toastify"; 
+import { toast } from "react-toastify";
 
 export default function Post() {
     //Form state
     const [post, setPost] = useState({description: ""});
-
     const [user, loading] = useAuthState(auth);
     const route = useRouter();
+    const routeData = route.query;
 
     //Submit post
     const submitPost = async (e) => {
@@ -45,6 +45,19 @@ export default function Post() {
         setPost({description: ""});
         return route.push("/")
     }
+
+    //Check user
+    const checkUser = async () => {
+        if(loading) return;
+        if(!user) route.push("/auth/login")
+        if(routeData.id){
+            setPost({description: routeData.description, id: routeData.id})
+        }
+    };
+
+    useEffect(() => {
+        checkUser();
+    }, [user,loading]);
 
     return(
         <div className="my-20 p-12 shadow-lg rounded-lg max-w-md mx-auto">
