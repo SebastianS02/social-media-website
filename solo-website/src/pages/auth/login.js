@@ -1,4 +1,3 @@
-import { FcGoogle } from "react-icons/fc";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../../../utils/firebase";
 import { useRouter } from "next/router";
@@ -37,7 +36,6 @@ export default function Login() {
                     onClick={GoogleLogin} 
                     className="text-white bg-gray-700 w-full font-medium rounded-lg flex align-middle p-4 gap-2"
                 >
-                    <FcGoogle className="text-2x1" />
                     Sign in with Google
                 </button>
             </div>
